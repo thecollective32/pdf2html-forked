@@ -87,9 +87,11 @@ const runPDFBox = async (filepath, _options) => {
 
 const runTika = async (filepath, _commandOption, options) => {
     const maxBuffer = (options && options.maxBuffer) || 1024 * 2000;
+    const initialHeapSize = '4g'; // Set initial Java heap size
+    const maxHeapSize = '16g'; // Set maximum Java heap size
     const commandOption = _commandOption || 'html';
     const command = 'java';
-    const commandArgs = ['-jar', `${constants.DIRECTORY.VENDOR + constants.VENDOR_TIKA_JAR}`, `--${commandOption}`, filepath];
+    const commandArgs = ['-Xms' + initialHeapSize, '-Xmx' + maxHeapSize, '-jar', `${constants.DIRECTORY.VENDOR + constants.VENDOR_TIKA_JAR}`, `--${commandOption}`, filepath];
     return executeCommand(command, commandArgs, { maxBuffer });
 };
 
@@ -97,6 +99,7 @@ const html = async (filepath, options) => {
     debug('Converts PDF to HTML');
     return runTika(filepath, 'html', options);
 };
+
 
 const pages = async (filepath, _options) => {
     const options = defaults(_options || {}, { text: false });
